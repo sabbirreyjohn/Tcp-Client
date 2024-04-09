@@ -12,8 +12,8 @@ android {
 
     defaultConfig {
         applicationId = "xyz.androidrey.composepagination"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 26
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -94,6 +94,8 @@ dependencies {
     //Retrofit-Moshi
     implementation ("com.squareup.moshi:moshi-kotlin:1.15.1")
     implementation ("com.squareup.retrofit2:converter-moshi:2.9.0")
+
+    implementation("com.jakewharton.timber:timber:5.0.1")
 
     //Test
     testImplementation("io.mockk:mockk:1.13.9")

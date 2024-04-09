@@ -1,49 +1,64 @@
 package xyz.androidrey.composepagination.ui.main
 
+import MyAppTheme
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
-import xyz.androidrey.composepagination.BuildConfig
-import xyz.androidrey.composepagination.ui.theme.ComposePaginationTheme
+import xyz.androidrey.composepagination.domain.service.TheForegroundService
+import xyz.androidrey.composepagination.ui.chat.ChatScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val serviceIntent by lazy {
+        Intent(this, TheForegroundService::class.java)
+    }
+
+    private fun startService() {
+        startService(serviceIntent)
+    }
+
+    private fun stopService() {
+        stopService(serviceIntent)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Request the permission
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ),
+                100
+            )
+        }
         setContent {
-            ComposePaginationTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+            MyAppTheme {
+                ChatScreen()
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    override fun onResume() {
+        super.onResume()
+        startService()
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ComposePaginationTheme {
-        Greeting("Android")
+    override fun onPause() {
+        super.onPause()
+        stopService()
     }
 }
